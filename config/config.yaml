@@ -1,0 +1,51 @@
+# =============================================================================
+# AI Payment Fraud Investigator - Engine Configuration
+# Tunable parameters for skills, scoring, and decision policy. Values here are
+# safe defaults and can be overridden per environment.
+# =============================================================================
+
+engine:
+  # Maximum number of cases processed in a single batch run.
+  max_batch_size: 1000
+  # Persist a JSON investigation report for every case.
+  persist_reports: true
+
+decision_policy:
+  # Risk score (0-100) at or above which a transaction is declined.
+  decline_threshold: 75
+  # Risk score (0-100) at or above which a case is escalated to a human queue.
+  escalate_threshold: 45
+
+# Relative contribution of each skill to the aggregate risk score.
+# Weights are normalized at runtime, so they need not sum to 1.0.
+skill_weights:
+  transaction_analysis: 0.20
+  velocity_check: 0.20
+  geolocation_check: 0.15
+  device_fingerprint: 0.15
+  blacklist_check: 0.20
+  anomaly_detection: 0.10
+
+velocity_check:
+  # Time window used to count recent activity for the same account.
+  window_minutes: 60
+  # Transaction count within the window that is considered high velocity.
+  max_transactions: 5
+  # Cumulative amount within the window that is considered high velocity.
+  max_amount: 5000.0
+
+geolocation_check:
+  # Speed in km/h above which consecutive transactions imply impossible travel.
+  impossible_travel_kmh: 900.0
+  # Country codes that warrant additional scrutiny.
+  high_risk_countries: ["XX", "YY", "ZZ"]
+
+transaction_analysis:
+  # Amount above which a single transaction is treated as high value.
+  high_value_amount: 2500.0
+  # Hours (local, 24h) considered unusual for normal activity.
+  unusual_hours: [0, 1, 2, 3, 4]
+
+anomaly_detection:
+  # Z-score above which a transaction amount is treated as a statistical outlier.
+  zscore_threshold: 3.0

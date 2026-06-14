@@ -1,0 +1,31 @@
+{
+  "name": "ai-payment-fraud-investigator",
+  "version": "1.0.0",
+  "description": "Production-grade Agent Skills that automate payment fraud investigations end to end.",
+  "license": "MIT",
+  "skills": [
+    "skills/using-fraud-investigator",
+    "skills/transaction-intake",
+    "skills/data-enrichment",
+    "skills/transaction-analysis",
+    "skills/velocity-analysis",
+    "skills/geolocation-risk",
+    "skills/device-fingerprinting",
+    "skills/watchlist-screening",
+    "skills/anomaly-detection",
+    "skills/risk-scoring",
+    "skills/fraud-decisioning",
+    "skills/investigation-reporting"
+  ],
+  "agents": [
+    "agents/fraud-investigator.md",
+    "agents/risk-analyst.md",
+    "agents/compliance-reviewer.md"
+  ],
+  "references": [
+    "references/fraud-typologies.md",
+    "references/risk-scoring-rubric.md",
+    "references/decision-policy.md",
+    "references/investigation-checklist.md"
+  ]
+}

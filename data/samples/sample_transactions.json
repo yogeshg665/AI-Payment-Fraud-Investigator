@@ -1,0 +1,76 @@
+[
+  {
+    "transaction": {
+      "transaction_id": "txn_1001",
+      "account_id": "acct_a1",
+      "card_token": "tok_aaaa1111",
+      "amount": 42.5,
+      "currency": "USD",
+      "timestamp": "2026-05-01T14:05:00Z",
+      "merchant_id": "merch_coffee",
+      "merchant_category": "food_and_beverage",
+      "channel": "card_present",
+      "device_id": "dev_a1_primary",
+      "ip_address": "203.0.113.10",
+      "location": { "latitude": 40.7128, "longitude": -74.006, "country_code": "US" }
+    },
+    "account_history": [
+      {
+        "transaction_id": "txn_0900",
+        "account_id": "acct_a1",
+        "card_token": "tok_aaaa1111",
+        "amount": 38.0,
+        "currency": "USD",
+        "timestamp": "2026-04-28T13:00:00Z",
+        "merchant_id": "merch_grocer",
+        "channel": "card_present",
+        "device_id": "dev_a1_primary",
+        "location": { "latitude": 40.71, "longitude": -74.0, "country_code": "US" }
+      }
+    ],
+    "enrichment": {}
+  },
+  {
+    "transaction": {
+      "transaction_id": "txn_2002",
+      "account_id": "acct_b2",
+      "card_token": "tok_bbbb2222",
+      "amount": 7800.0,
+      "currency": "USD",
+      "timestamp": "2026-05-02T03:12:00Z",
+      "merchant_id": "merch_electronics",
+      "merchant_category": "electronics",
+      "channel": "ecommerce",
+      "device_id": "dev_unknown_x",
+      "ip_address": "198.51.100.77",
+      "location": { "latitude": 51.5074, "longitude": -0.1278, "country_code": "XX" }
+    },
+    "account_history": [
+      {
+        "transaction_id": "txn_1900",
+        "account_id": "acct_b2",
+        "card_token": "tok_bbbb2222",
+        "amount": 95.0,
+        "currency": "USD",
+        "timestamp": "2026-05-02T02:40:00Z",
+        "merchant_id": "merch_grocer",
+        "channel": "card_present",
+        "device_id": "dev_b2_primary",
+        "location": { "latitude": 40.7128, "longitude": -74.006, "country_code": "US" }
+      },
+      {
+        "transaction_id": "txn_1901",
+        "account_id": "acct_b2",
+        "card_token": "tok_bbbb2222",
+        "amount": 88.0,
+        "currency": "USD",
+        "timestamp": "2026-05-01T18:00:00Z",
+        "merchant_id": "merch_pharmacy",
+        "channel": "card_present",
+        "device_id": "dev_b2_primary",
+        "location": { "latitude": 40.7, "longitude": -74.0, "country_code": "US" }
+      }
+    ],
+    "enrichment": { "ip_blacklisted": true, "device_known": false }
+  }
+]

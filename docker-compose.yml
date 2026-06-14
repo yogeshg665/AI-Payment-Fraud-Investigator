@@ -1,0 +1,26 @@
+# =============================================================================
+# AI Payment Fraud Investigator - Local Orchestration
+# Runs the investigator against the bundled sample dataset and writes reports
+# to the host ./output directory.
+# =============================================================================
+
+services:
+  fraud-investigator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-payment-fraud-investigator:latest
+    environment:
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      RISK_DECLINE_THRESHOLD: ${RISK_DECLINE_THRESHOLD:-75}
+      RISK_ESCALATE_THRESHOLD: ${RISK_ESCALATE_THRESHOLD:-45}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./output:/app/output
+    command:
+      - investigate
+      - data/samples/sample_transactions.json
+      - --output
+      - output

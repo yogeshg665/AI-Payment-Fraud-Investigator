@@ -1,0 +1,98 @@
+"""High-level pipeline for batch and single-case investigations.
+
+The pipeline wraps the orchestrator with input loading and optional report
+persistence, providing a stable entry point for application code and the CLI.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Iterable
+
+from fraud_investigator.agents.orchestrator import InvestigationResult, OrchestratorAgent
+from fraud_investigator.llm.client import LLMClient
+from fraud_investigator.models.transaction import Transaction
+from fraud_investigator.utils.config import EngineConfig, load_config
+from fraud_investigator.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
+
+@dataclass
+class CaseInput:
+    """Normalized input for a single investigation."""
+
+    transaction: Transaction
+    account_history: list[Transaction] = field(default_factory=list)
+    enrichment: dict[str, Any] = field(default_factory=dict)
+
+
+def load_cases_from_json(path: str | Path) -> list[CaseInput]:
+    """Load investigation inputs from a JSON file.
+
+    The file must contain a list of objects, each with a ``transaction`` object
+    and optional ``account_history`` (list) and ``enrichment`` (object).
+    """
+    raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(raw, list):
+        raise ValueError("Input JSON must be a list of case objects.")
+
+    cases: list[CaseInput] = []
+    for entry in raw:
+        transaction = Transaction.model_validate(entry["transaction"])
+        history = [
+            Transaction.model_validate(item) for item in entry.get("account_history", [])
+        ]
+        cases.append(
+            CaseInput(
+                transaction=transaction,
+                account_history=history,
+                enrichment=entry.get("enrichment", {}) or {},
+            )
+        )
+    return cases
+
+
+class InvestigationPipeline:
+    """Coordinates investigations over one or many cases."""
+
+    def __init__(
+        self,
+        config: EngineConfig | None = None,
+        llm_client: LLMClient | None = None,
+    ) -> None:
+        self.config = config or load_config()
+        self.orchestrator = OrchestratorAgent(self.config, llm_client=llm_client)
+
+    def run_one(self, case_input: CaseInput) -> InvestigationResult:
+        """Investigate a single case."""
+        return self.orchestrator.investigate(
+            transaction=case_input.transaction,
+            account_history=case_input.account_history,
+            enrichment=case_input.enrichment,
+        )
+
+    def run_batch(
+        self,
+        cases: Iterable[CaseInput],
+        output_dir: str | Path | None = None,
+    ) -> list[InvestigationResult]:
+        """Investigate a batch of cases, optionally persisting JSON reports."""
+        results: list[InvestigationResult] = []
+        out_path = Path(output_dir) if output_dir else None
+        if out_path is not None:
+            out_path.mkdir(parents=True, exist_ok=True)
+
+        for case_input in cases:
+            result = self.run_one(case_input)
+            results.append(result)
+            if out_path is not None and self.config.engine.persist_reports:
+                report_file = out_path / f"{result.report['case_id']}.json"
+                report_file.write_text(
+                    json.dumps(result.report, indent=2), encoding="utf-8"
+                )
+
+        logger.info("Completed batch of %d case(s)", len(results))
+        return results
