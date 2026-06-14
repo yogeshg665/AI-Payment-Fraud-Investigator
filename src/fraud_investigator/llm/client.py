@@ -66,10 +66,10 @@ class LLMClient:
         try:
             from openai import OpenAI  # imported lazily so it stays optional
 
-            client_kwargs: dict[str, str] = {"api_key": self.settings.api_key}
             if self.settings.api_base:
-                client_kwargs["base_url"] = self.settings.api_base
-            client = OpenAI(**client_kwargs)
+                client = OpenAI(api_key=self.settings.api_key, base_url=self.settings.api_base)
+            else:
+                client = OpenAI(api_key=self.settings.api_key)
 
             response = client.chat.completions.create(
                 model=self.settings.model,

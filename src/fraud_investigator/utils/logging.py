@@ -16,7 +16,7 @@ def configure_logging(level: str | None = None) -> None:
     if _CONFIGURED:
         return
 
-    resolved_level = (level or os.getenv("LOG_LEVEL", "INFO")).upper()
+    resolved_level = (level or os.getenv("LOG_LEVEL") or "INFO").upper()
     logging.basicConfig(
         level=resolved_level,
         format="%(message)s",
