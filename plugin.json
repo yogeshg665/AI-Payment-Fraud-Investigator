@@ -13,6 +13,7 @@
     "skills/device-fingerprinting",
     "skills/watchlist-screening",
     "skills/anomaly-detection",
+    "skills/case-memory",
     "skills/risk-scoring",
     "skills/fraud-decisioning",
     "skills/investigation-reporting"
@@ -26,6 +27,7 @@
     "references/fraud-typologies.md",
     "references/risk-scoring-rubric.md",
     "references/decision-policy.md",
-    "references/investigation-checklist.md"
+    "references/investigation-checklist.md",
+    "references/memory-and-learning.md"
   ]
 }

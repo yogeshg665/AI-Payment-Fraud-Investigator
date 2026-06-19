@@ -21,7 +21,7 @@ reference.
 
 ## Skills
 
-The pack includes 12 skills: 1 meta-skill that routes work, plus 11 lifecycle
+The pack includes 13 skills: 1 meta-skill that routes work, plus 12 lifecycle
 skills.
 
 ### Meta
@@ -47,6 +47,7 @@ skills.
 | [device-fingerprinting](skills/device-fingerprinting/SKILL.md) | Detecting unknown or shared devices. |
 | [watchlist-screening](skills/watchlist-screening/SKILL.md) | Screening against deny lists and watchlists. |
 | [anomaly-detection](skills/anomaly-detection/SKILL.md) | Detecting statistical outliers versus account history. |
+| [case-memory](skills/case-memory/SKILL.md) | Recalling adverse prior history for a repeat account or card. |
 
 ### Score, Decide, Report
 
@@ -76,6 +77,7 @@ Quick-reference material that skills pull in when needed:
 | [risk-scoring-rubric.md](references/risk-scoring-rubric.md) | Severity bands, confidence, and score interpretation. |
 | [decision-policy.md](references/decision-policy.md) | Thresholds, outcomes, and governance. |
 | [investigation-checklist.md](references/investigation-checklist.md) | Pre-close control checklist for every case. |
+| [memory-and-learning.md](references/memory-and-learning.md) | Collective memory, recall, and the feedback loop. |
 
 ## How Skills Work
 
@@ -121,16 +123,18 @@ Design choices:
 │   ├── device-fingerprinting/      Detect
 │   ├── watchlist-screening/        Detect
 │   ├── anomaly-detection/          Detect
+│   ├── case-memory/                Detect (collective memory recall)
 │   ├── risk-scoring/               Score
 │   ├── fraud-decisioning/          Decide
 │   └── investigation-reporting/    Report
 ├── agents/                     3 specialist personas
-├── references/                 4 supplementary references
+├── references/                 5 supplementary references
 ├── template/                   Skill template (SKILL.md)
 ├── scripts/                    Skill validator
 ├── src/fraud_investigator/     Deterministic Python engine (executable reference)
 │   ├── agents/                 Lifecycle agents
 │   ├── skills/                 Fraud detection checks
+│   ├── memory/                 Collective memory, recall, and feedback loop
 │   ├── models/                 Pydantic domain models
 │   ├── pipeline/               Batch and single-case orchestration
 │   ├── llm/                    Optional LLM client and deterministic fallback
@@ -180,6 +184,30 @@ for result in results:
     print(result.decision.outcome, result.decision.risk_score)
 ```
 
+## Memory and Learning
+
+The engine has an optional collective-memory and feedback loop, inspired by
+adaptive-memory agent harnesses but kept fully deterministic. It is disabled by
+default. See [references/memory-and-learning.md](references/memory-and-learning.md).
+
+- **Collective memory.** Completed investigations are persisted to a local
+  SQLite store using only pseudonymous accounts and tokenized cards.
+- **Recall.** Prior cases for the same account or card are retrieved and injected
+  during enrichment; the `case-memory` skill turns adverse history into a
+  corroborating, non-critical signal.
+- **Feedback loop.** Analysts label cases as `confirmed_fraud` or `legitimate`,
+  and `calibrate` recommends thresholds from those labels. Calibration is
+  advisory only and never mutates configuration.
+
+```bash
+# Persist and recall history during investigation
+python -m fraud_investigator.cli investigate data/samples/sample_transactions.json --memory .fraud_memory/memory.db
+
+# Label a stored case, then get advisory threshold recommendations
+python -m fraud_investigator.cli feedback <case_id> confirmed_fraud --memory .fraud_memory/memory.db
+python -m fraud_investigator.cli calibrate --memory .fraud_memory/memory.db
+```
+
 ## Input Format
 
 Each input file is a JSON array of case objects. A case contains a `transaction`,
@@ -220,6 +248,8 @@ scoring and decision model.
 | `decision_policy.decline_threshold` | Risk score at or above which a transaction is declined. |
 | `decision_policy.escalate_threshold` | Risk score at or above which a case is escalated. |
 | `skill_weights` | Relative contribution of each skill to the aggregate score. |
+| `memory.enabled` | Persist investigations and recall prior history. Off by default. |
+| `memory.path` | SQLite path for collective memory and analyst feedback. |
 | `LLM_PROVIDER` | `none`, `openai`, or `azure_openai`. Defaults to deterministic mode. |
 
 ## Containerized Execution

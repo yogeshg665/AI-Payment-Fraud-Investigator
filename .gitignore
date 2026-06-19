@@ -39,3 +39,7 @@ Thumbs.db
 output/
 reports/
 *.log
+
+# Collective memory store (local, may contain case history)
+.fraud_memory/
+*.db

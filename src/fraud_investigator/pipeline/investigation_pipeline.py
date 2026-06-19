@@ -13,6 +13,12 @@ from typing import Any, Iterable
 
 from fraud_investigator.agents.orchestrator import InvestigationResult, OrchestratorAgent
 from fraud_investigator.llm.client import LLMClient
+from fraud_investigator.memory import (
+    CalibrationReport,
+    FeedbackLabel,
+    MemoryStore,
+    calibrate_thresholds,
+)
 from fraud_investigator.models.transaction import Transaction
 from fraud_investigator.utils.config import EngineConfig, load_config
 from fraud_investigator.utils.logging import get_logger
@@ -62,9 +68,47 @@ class InvestigationPipeline:
         self,
         config: EngineConfig | None = None,
         llm_client: LLMClient | None = None,
+        memory_store: MemoryStore | None = None,
     ) -> None:
         self.config = config or load_config()
-        self.orchestrator = OrchestratorAgent(self.config, llm_client=llm_client)
+        self.memory_store = memory_store or self._build_memory_store()
+        self.orchestrator = OrchestratorAgent(
+            self.config,
+            llm_client=llm_client,
+            memory_store=self.memory_store,
+        )
+
+    def _build_memory_store(self) -> MemoryStore | None:
+        """Open the configured memory store, or return None when disabled."""
+        if not self.config.memory.enabled:
+            return None
+        return MemoryStore(self.config.memory.path)
+
+    def record_feedback(
+        self,
+        case_id: str,
+        label: FeedbackLabel,
+        note: str | None = None,
+    ) -> bool:
+        """Record an analyst-confirmed outcome for a previously stored case."""
+        if self.memory_store is None:
+            raise RuntimeError(
+                "Collective memory is disabled. Enable memory in configuration to "
+                "record feedback."
+            )
+        return self.memory_store.record_feedback(case_id, label, note)
+
+    def calibrate(self) -> CalibrationReport:
+        """Recommend decision thresholds from labeled feedback."""
+        if self.memory_store is None:
+            raise RuntimeError(
+                "Collective memory is disabled. Enable memory in configuration to "
+                "calibrate thresholds."
+            )
+        return calibrate_thresholds(
+            self.memory_store.all_records(),
+            self.config.decision_policy,
+        )
 
     def run_one(self, case_input: CaseInput) -> InvestigationResult:
         """Investigate a single case."""

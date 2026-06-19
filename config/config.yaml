@@ -25,6 +25,7 @@ skill_weights:
   device_fingerprint: 0.15
   blacklist_check: 0.20
   anomaly_detection: 0.10
+  case_memory: 0.15
 
 velocity_check:
   # Time window used to count recent activity for the same account.
@@ -49,3 +50,10 @@ transaction_analysis:
 anomaly_detection:
   # Z-score above which a transaction amount is treated as a statistical outlier.
   zscore_threshold: 3.0
+
+memory:
+  # Persist investigations and recall prior history for repeat accounts/cards.
+  # Disabled by default so the engine is stateless unless explicitly opted in.
+  enabled: false
+  # SQLite database path for collective case memory and analyst feedback.
+  path: ".fraud_memory/memory.db"

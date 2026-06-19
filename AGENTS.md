@@ -29,6 +29,10 @@ executable reference for every skill.
 3. Use tokenized card references and pseudonymous account identifiers. Never
    request or store raw cardholder data.
 4. Declines and escalations require human-review provisions.
+5. Collective memory is optional and off by default. When enabled, recall and
+   feedback remain deterministic, the memory signal is never critical, and
+   threshold calibration is advisory only. See
+   `references/memory-and-learning.md`.
 
 ## Running the Engine
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from fraud_investigator.skills.anomaly_detection import AnomalyDetectionSkill
 from fraud_investigator.skills.base import Skill
 from fraud_investigator.skills.blacklist_check import BlacklistCheckSkill
+from fraud_investigator.skills.case_memory import CaseMemorySkill
 from fraud_investigator.skills.device_fingerprint import DeviceFingerprintSkill
 from fraud_investigator.skills.geolocation_check import GeolocationCheckSkill
 from fraud_investigator.skills.transaction_analysis import TransactionAnalysisSkill
@@ -18,6 +19,7 @@ _SKILL_TYPES: list[type[Skill]] = [
     DeviceFingerprintSkill,
     BlacklistCheckSkill,
     AnomalyDetectionSkill,
+    CaseMemorySkill,
 ]
 
 

@@ -40,6 +40,13 @@ class AnomalyDetectionConfig(BaseModel):
     zscore_threshold: float = 3.0
 
 
+class MemoryConfig(BaseModel):
+    # When enabled, investigations are persisted and prior history is recalled.
+    enabled: bool = False
+    # Filesystem path to the SQLite memory database.
+    path: str = ".fraud_memory/memory.db"
+
+
 class EngineConfig(BaseModel):
     """Aggregate, strongly typed engine configuration."""
 
@@ -52,6 +59,7 @@ class EngineConfig(BaseModel):
         default_factory=TransactionAnalysisConfig
     )
     anomaly_detection: AnomalyDetectionConfig = Field(default_factory=AnomalyDetectionConfig)
+    memory: MemoryConfig = Field(default_factory=MemoryConfig)
 
     def _apply_env_overrides(self) -> None:
         """Allow critical thresholds to be overridden via environment variables."""
@@ -61,6 +69,12 @@ class EngineConfig(BaseModel):
             self.decision_policy.decline_threshold = float(decline)
         if escalate is not None:
             self.decision_policy.escalate_threshold = float(escalate)
+        memory_enabled = os.getenv("MEMORY_ENABLED")
+        memory_path = os.getenv("MEMORY_PATH")
+        if memory_enabled is not None:
+            self.memory.enabled = memory_enabled.strip().lower() in {"1", "true", "yes", "on"}
+        if memory_path is not None:
+            self.memory.path = memory_path
 
 
 def _default_config_path() -> Path:
