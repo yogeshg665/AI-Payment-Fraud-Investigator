@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="Sleuth - AI Payment Fraud Investigator" width="100%">
+</p>
+
 # Sleuth &middot; AI Payment Fraud Investigator
 
 Production-grade Agent Skills that automate payment fraud investigations end to
