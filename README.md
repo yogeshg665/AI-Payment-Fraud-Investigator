@@ -1,4 +1,4 @@
-# AI Payment Fraud Investigator
+# Sleuth &middot; AI Payment Fraud Investigator
 
 Production-grade Agent Skills that automate payment fraud investigations end to
 end. This pack replaces the repetitive triage performed by a human fraud analyst:
