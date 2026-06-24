@@ -23,6 +23,23 @@ reference.
  └──────┘      └──────┘      └──────┘      └──────┘      └──────┘      └──────┘
 ```
 
+## Contents
+
+- [Skills](#skills)
+- [Agent Personas](#agent-personas)
+- [Reference Material](#reference-material)
+- [How Skills Work](#how-skills-work)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Memory and Learning](#memory-and-learning)
+- [Input Format](#input-format)
+- [Configuration](#configuration)
+- [Containerized Execution](#containerized-execution)
+- [Validation and Testing](#validation-and-testing)
+- [Extending the Pack](#extending-the-pack)
+- [Responsible Use](#responsible-use)
+- [License](#license)
+
 ## Skills
 
 The pack includes 13 skills: 1 meta-skill that routes work, plus 12 lifecycle
