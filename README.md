@@ -283,6 +283,8 @@ Reports are written to the host `output/` directory.
 
 ## Validation and Testing
 
+Validate the skill manifests and run the deterministic engine's test suite:
+
 ```bash
 python scripts/validate_skills.py
 pytest -q
